@@ -1,0 +1,10 @@
+---
+
+nginx_system_user: "www-data"
+
+nginx_sites_available_path: /etc/nginx/sites-available
+
+nginx_base_path: /etc/nginx
+
+nginx_confd_path: /etc/nginx/conf.d
+

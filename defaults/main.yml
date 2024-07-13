@@ -1,0 +1,7 @@
+---
+# remove nginx default site
+nginx_remove_default: false
+
+# path to nginx site-tempale
+nginx_template_path: "{{role_path}}/templates"
+

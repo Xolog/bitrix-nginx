@@ -1,0 +1,53 @@
+---
+# tasks file for nginx
+- name: nginx | install nginx
+  dnf: 
+    name: nginx
+    state: present
+  
+- name: nginx | create sites dir
+  file:
+    path: "{{ nginx_sites_available_path }}"
+    state: directory
+
+- name: nginx | copy default configuration for bitrix
+  template:
+    src: "{{ item }}"
+    dest: "{{ nginx_confd_path }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+    backup: "yes"
+  with_fileglob:
+    - "{{ nginx_template_path }}/conf.d/*.j2"
+  notify:
+    - "check nginx configuration"    
+
+- name: nginx | copy sites_available configuration for bitrix
+  template:
+    src: "{{ item }}"
+    dest: "{{ nginx_sites_available_path }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+    backup: "yes"
+  with_fileglob:
+    - "{{ nginx_template_path }}/sites-available/*.j2"
+  notify:
+    - "check nginx configuration"
+
+- name: nginx | configure sites
+  template:
+    src: "{{ item }}"
+    dest: "{{ nginx_base_path }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
+    backup: "yes"
+  with_fileglob:
+    - "{{ nginx_template_path }}/*.conf.j2"
+  notify:
+    - "check nginx configuration"
+
+- name: nginx | configure hosts
+  shell: echo "127.0.0.1 push httpd" >> /etc/hosts
+  notify:
+    - "service nginx reload"
+
+- name: nginx | enable nginx
+  systemd_service:
+    name: nginx
+    state: restarted
+    enabled: true
+

@@ -1,0 +1,9 @@
+---
+# handlers file for nginx
+- name: check nginx configuration
+  command: nginx -t -c "{{ nginx_base_path }}"/nginx.conf
+  changed_when: false
+
+- name: service nginx reload
+  service: name=nginx state=reloaded
+
